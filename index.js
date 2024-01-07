@@ -1,5 +1,6 @@
 const express = require("express");
 const mysql = require("mysql2");
+const inquirer = require("inquirer");
 
 const PORT = process.env.PORT || 3001;
 const app = express();
@@ -21,60 +22,94 @@ const db = mysql.createConnection(
   console.log(`Connected to the courses_db database.`)
 );
 
-// get request to retrieve the department table from db
-
-app.get("/departments", (req, res) => {
+function displayDepartments() {
   const query = "SELECT * FROM department";
-
   db.query(query, (err, results) => {
     if (err) {
       console.error(err);
-      res.status(500).send("Error retrieving departments from the database.");
       return;
     }
-
-    console.log("Departments:");
+    console.log();
     console.table(results);
-    res.json(results);
   });
-});
+}
 
-// get request to retrieve the role table from db
-
-app.get("/roles", (req, res) => {
+function displayRoles() {
   const query = "SELECT * FROM role";
-
   db.query(query, (err, results) => {
     if (err) {
       console.error(err);
-      res.status(500).send("Error retrieving roles from the database.");
       return;
     }
-
-    console.log("Role:");
+    console.log();
     console.table(results);
-    res.json(results);
   });
-});
+}
 
-// get request to retrieve the employee table from db
-
-app.get("/employees", (req, res) => {
+function displayEmployees() {
   const query = "SELECT * FROM employee";
-
   db.query(query, (err, results) => {
     if (err) {
       console.error(err);
-      res.status(500).send("Error retrieving employees from the database.");
       return;
     }
-
-    console.log("Employees:");
-    console.table(results); // This will display the data in a tabular format
-    res.json(results);
+    console.log();
+    console.table(results);
   });
-});
+}
+
+function addDepartment() {
+  console.log("hit addDepartment function");
+}
+function addRole() {
+  console.log("hit addRole function");
+}
+function addEmployee() {
+  console.log("hit addEmployee function");
+}
+function updateRole() {
+  console.log("hit updateRole function");
+}
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
+  promptUser();
 });
+
+function promptUser() {
+  inquirer
+    .prompt([
+      {
+        type: "list",
+        message: "What would you like to do?",
+        choices: [
+          "View all departments",
+          "View all roles",
+          "View all employees",
+          "Add a department",
+          "Add a role",
+          "Add an employee",
+          "Update an employee role",
+        ],
+        name: "mainOption",
+      },
+    ])
+    .then(function (data) {
+      if (data.mainOption === "View all departments") {
+        displayDepartments();
+      } else if (data.mainOption === "View all roles") {
+        displayRoles();
+      } else if (data.mainOption === "View all employees") {
+        displayEmployees();
+      } else if (data.mainOption === "Add a department") {
+        addDepartment();
+      } else if (data.mainOption === "Add a role") {
+        addRole();
+      } else if (data.mainOption === "Add an employee") {
+        addEmployee();
+      } else if (data.mainOption === "Update an employee role") {
+        updateRole();
+      }
+      promptUser();
+    });
+}
