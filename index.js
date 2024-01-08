@@ -31,6 +31,7 @@ function displayDepartments() {
     }
     console.log();
     console.table(results);
+    promptUser();
   });
 }
 
@@ -43,6 +44,7 @@ function displayRoles() {
     }
     console.log();
     console.table(results);
+    promptUser();
   });
 }
 
@@ -55,17 +57,119 @@ function displayEmployees() {
     }
     console.log();
     console.table(results);
+    promptUser();
   });
 }
 
 function addDepartment() {
-  console.log("hit addDepartment function");
+  inquirer
+    .prompt([
+      {
+        type: "input",
+        message: "Enter the name of the new department:",
+        name: "newDepartment",
+      },
+    ])
+    .then(function (data) {
+      const query = "INSERT INTO department (department_name) VALUES (?)";
+      const values = [data.newDepartment];
+      db.query(query, values, (err, results) => {
+        if (err) {
+          console.error(err);
+          return;
+        }
+
+        console.log("Department added successfully!");
+
+        displayDepartments();
+
+        promptUser();
+      });
+    });
 }
 function addRole() {
-  console.log("hit addRole function");
+  inquirer
+    .prompt([
+      {
+        type: "input",
+        message: "Enter the name of the new role:",
+        name: "roleName",
+      },
+      {
+        type: "input",
+        message: "Enter the salary of the new role:",
+        name: "roleSalary",
+      },
+      {
+        type: "input",
+        message: "Enter the department id of the new role",
+        name: "roleDepartment",
+      },
+    ])
+    .then(function (data) {
+      const query =
+        "INSERT INTO role (title, salary, department_id) VALUES (?, ?, ?)";
+      const values = [data.roleName, data.roleSalary, data.roleDepartment];
+      db.query(query, values, (err, results) => {
+        if (err) {
+          console.error(err);
+          return;
+        }
+
+        console.log("Role added successfully!");
+
+        displayRoles();
+
+        promptUser();
+      });
+    });
 }
 function addEmployee() {
-  console.log("hit addEmployee function");
+  inquirer
+    .prompt([
+      {
+        type: "input",
+        message: "Enter the first name of the new employee:",
+        name: "employeeFirst",
+      },
+      {
+        type: "input",
+        message: "Enter the last name of the new employee:",
+        name: "employeeLast",
+      },
+      {
+        type: "input",
+        message: "Enter id of their role:",
+        name: "employeeRole",
+      },
+      {
+        type: "input",
+        message: "Enter the manager's id of the new employee:",
+        name: "employeeManager",
+      },
+    ])
+    .then(function (data) {
+      const query =
+        "INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES (?, ?, ?, ?)";
+      const values = [
+        data.employeeFirst,
+        data.employeeLast,
+        data.employeeRole,
+        data.employeeManager,
+      ];
+      db.query(query, values, (err, results) => {
+        if (err) {
+          console.error(err);
+          return;
+        }
+
+        console.log("Employee added successfully!");
+
+        displayEmployees();
+
+        promptUser();
+      });
+    });
 }
 function updateRole() {
   console.log("hit updateRole function");
@@ -110,6 +214,5 @@ function promptUser() {
       } else if (data.mainOption === "Update an employee role") {
         updateRole();
       }
-      promptUser();
     });
 }
