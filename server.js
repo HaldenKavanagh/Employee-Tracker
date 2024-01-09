@@ -129,8 +129,6 @@ function addDepartment() {
         console.log("Department added successfully!");
 
         displayDepartments();
-
-        promptUser();
       });
     });
 }
@@ -169,8 +167,6 @@ function addRole() {
         console.log("Role added successfully!");
 
         displayRoles();
-
-        promptUser();
       });
     });
 }
@@ -219,8 +215,6 @@ function addEmployee() {
         console.log("Employee added successfully!");
 
         displayEmployees();
-
-        promptUser();
       });
     });
 }
@@ -254,8 +248,6 @@ function updateRole() {
         console.log("Employee role updated successfully!");
 
         displayEmployees();
-
-        promptUser();
       });
     });
 }
