@@ -1,3 +1,5 @@
+// npm requirements
+
 const express = require("express");
 const mysql = require("mysql2");
 const inquirer = require("inquirer");
@@ -22,6 +24,46 @@ const db = mysql.createConnection(
   console.log(`Connected to the courses_db database.`)
 );
 
+// prompt user function, this is the "main menu" using inquirer and user input to direct to one of the functions below
+function promptUser() {
+  inquirer
+    .prompt([
+      {
+        type: "list",
+        message: "What would you like to do?",
+        choices: [
+          "View all departments",
+          "View all roles",
+          "View all employees",
+          "Add a department",
+          "Add a role",
+          "Add an employee",
+          "Update an employee role",
+        ],
+        name: "mainOption",
+      },
+    ])
+    .then(function (data) {
+      if (data.mainOption === "View all departments") {
+        displayDepartments();
+      } else if (data.mainOption === "View all roles") {
+        displayRoles();
+      } else if (data.mainOption === "View all employees") {
+        displayEmployees();
+      } else if (data.mainOption === "Add a department") {
+        addDepartment();
+      } else if (data.mainOption === "Add a role") {
+        addRole();
+      } else if (data.mainOption === "Add an employee") {
+        addEmployee();
+      } else if (data.mainOption === "Update an employee role") {
+        updateRole();
+      }
+    });
+}
+
+// function to display all departments, uses a query to retrieve all departments and displays them to the console in table form
+
 function displayDepartments() {
   const query = "SELECT * FROM department";
   db.query(query, (err, results) => {
@@ -35,6 +77,7 @@ function displayDepartments() {
   });
 }
 
+// function to display all roles, uses a query to retrieve all roles and displays them to the console in table form
 function displayRoles() {
   const query = "SELECT * FROM role";
   db.query(query, (err, results) => {
@@ -48,6 +91,8 @@ function displayRoles() {
   });
 }
 
+// function to display all employees, uses a query to retrieve all employees and displays them to the console in table form
+
 function displayEmployees() {
   const query = "SELECT * FROM employee";
   db.query(query, (err, results) => {
@@ -60,6 +105,8 @@ function displayEmployees() {
     promptUser();
   });
 }
+
+// function to add a department, uses inquirer to obtain parameters, and uses a query to append it to employees_db and displays the new department along with the others to the console in table form
 
 function addDepartment() {
   inquirer
@@ -87,6 +134,9 @@ function addDepartment() {
       });
     });
 }
+
+// function to add a role, uses inquirer to obtain parameters, and uses a query to append it to employees_db and displays the new role along with the others to the console in table form
+
 function addRole() {
   inquirer
     .prompt([
@@ -124,6 +174,9 @@ function addRole() {
       });
     });
 }
+
+// function to add an employee, uses inquirer to obtain parameters, and uses a query to append it to employees_db and displays the new employee along with the others to the console in table form
+
 function addEmployee() {
   inquirer
     .prompt([
@@ -171,48 +224,43 @@ function addEmployee() {
       });
     });
 }
+
+// function to update an employee's role, uses inquirer to obtain parameters, and uses a query to append it to employees_db and displays the updated employee along with the others to the console in table form
+
 function updateRole() {
   console.log("hit updateRole function");
+  inquirer
+    .prompt([
+      {
+        type: "input",
+        message: "Enter the ID of the employee whose role you want to update:",
+        name: "employeeId",
+      },
+      {
+        type: "input",
+        message: "Enter the new role ID:",
+        name: "newRoleId",
+      },
+    ])
+    .then(function (data) {
+      const query = "UPDATE employee SET role_id = ? WHERE id = ?";
+      const values = [data.newRoleId, data.employeeId];
+      db.query(query, values, (err, results) => {
+        if (err) {
+          console.error(err);
+          return;
+        }
+
+        console.log("Employee role updated successfully!");
+
+        displayEmployees();
+
+        promptUser();
+      });
+    });
 }
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
   promptUser();
 });
-
-function promptUser() {
-  inquirer
-    .prompt([
-      {
-        type: "list",
-        message: "What would you like to do?",
-        choices: [
-          "View all departments",
-          "View all roles",
-          "View all employees",
-          "Add a department",
-          "Add a role",
-          "Add an employee",
-          "Update an employee role",
-        ],
-        name: "mainOption",
-      },
-    ])
-    .then(function (data) {
-      if (data.mainOption === "View all departments") {
-        displayDepartments();
-      } else if (data.mainOption === "View all roles") {
-        displayRoles();
-      } else if (data.mainOption === "View all employees") {
-        displayEmployees();
-      } else if (data.mainOption === "Add a department") {
-        addDepartment();
-      } else if (data.mainOption === "Add a role") {
-        addRole();
-      } else if (data.mainOption === "Add an employee") {
-        addEmployee();
-      } else if (data.mainOption === "Update an employee role") {
-        updateRole();
-      }
-    });
-}
